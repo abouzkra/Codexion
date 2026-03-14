@@ -41,19 +41,19 @@ When a process is forked (via `fork()`), the child receives a **copy** of the pa
 ### Visual: Process with Multiple Threads
 
 ```
-┌─────────────────────────────────────────────┐
-│                   PROCESS                   │
-│                                             │
+┌──────────────────────────────────────────────────┐
+│                      PROCESS                     │
+│                                                  │
 │  ┌────────────┐  ┌────────────┐  ┌────────────┐  │
 │  │  Thread 1  │  │  Thread 2  │  │  Thread 3  │  │
 │  │ (main)     │  │            │  │            │  │
 │  │ own stack  │  │ own stack  │  │ own stack  │  │
 │  │ own PC     │  │ own PC     │  │ own PC     │  │
 │  └────────────┘  └────────────┘  └────────────┘  │
-│                                             │
-│       Shared: heap, globals, file           │
-│       descriptors, code segment             │
-└─────────────────────────────────────────────┘
+│                                                  │
+│            Shared: heap, globals, file           │
+│             descriptors, code segment            │
+└──────────────────────────────────────────────────┘
 ```
 
 ---
