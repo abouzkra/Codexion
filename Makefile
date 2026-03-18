@@ -1,7 +1,10 @@
 NAME = codexion
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -pthread
-SRCS = coders/parser.c \
+SRCS = coders/utils.c	\
+	   coders/init.c 	\
+	   coders/cleanup.c	\
+	   coders/parser.c	\
 	   coders/main.c
 OBJS = $(SRCS:.c=.o)
 RM = rm -rf
@@ -12,7 +15,7 @@ $(NAME): $(OBJS)
 	$(info $(SRCS))
 	$(CC) $(CFLAGS) $^ -o $@
 
-%.o: %.c
+%.o: %.c coders/codexion.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
