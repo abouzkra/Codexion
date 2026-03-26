@@ -6,17 +6,18 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 10:03:06 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/03/17 00:38:28 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/03/22 08:32:31 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <string.h>
 
 static int	init_mutexes(t_data *data)
 {
 	if (pthread_mutex_init(&data->sim_mutex, NULL) != 0)
 		return (0);
-	if (pthread_mutex_init(&data->print_mutex, NULL) != 0)
+	if (pthread_mutex_init(&data->log_mutex, NULL) != 0)
 	{
 		pthread_mutex_destroy(&data->sim_mutex);
 		return (0);
@@ -47,6 +48,7 @@ static void	init_dongles(t_data *data)
 	data->dongles = (t_dongle *)malloc(sizeof(t_dongle) * data->number_of_coders);
 	if (!data->dongles)
 		return ;
+	memset(data->dongles, 0, sizeof(t_dongle) * data->number_of_coders);
 	i = 0;
 	while (i < data->number_of_coders)
 	{
@@ -72,6 +74,7 @@ static void	init_coders(t_data *data)
 	data->coders = (t_coder *)malloc(sizeof(t_coder) * data->number_of_coders);
 	if (!data->coders)
 		return ;
+	memset(data->coders, 0, sizeof(t_dongle) * data->number_of_coders);
 	n = data->number_of_coders;
 	i = 0;
 	while (i < data->number_of_coders)

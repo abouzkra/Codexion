@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/15 17:59:40 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/03/17 05:00:35 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/03/22 08:38:00 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,19 @@ void	print_data(t_data *data)
 int	main(int ac, char **av)
 {
 	t_data	*data;
+	int		created_threads;
 
 	data = parse_args(ac, av);
 	if (!data)
 		return (1);
-	print_data(data);
+	created_threads = run_coders(data);
+	if (created_threads != data->number_of_coders + 2)
+	{
+		cleanup(data);
+		return (1);
+	}
+	if (!join_coders(data))
+		return (1);
+	cleanup(data);
 	return (0);
 }

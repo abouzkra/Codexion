@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/15 17:59:52 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/03/17 00:34:58 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/03/22 07:44:30 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,14 @@ enum e_scheduler
 {
 	FIFO,
 	EDF
+};
+
+enum e_coder_state
+{
+	COMPILING,
+	REFACTORING,
+	DEBUGGING,
+	BURNED_OUT
 };
 
 typedef struct s_waiter
@@ -66,8 +74,10 @@ typedef struct s_data
 
 	long				start_time;
 	int					sim_over;
+	pthread_t			monitor_th;
+	pthread_t			logger_th;
 	pthread_mutex_t		sim_mutex;
-	pthread_mutex_t		print_mutex;
+	pthread_mutex_t		log_mutex;
 	t_dongle			*dongles;
 	t_coder				*coders;
 }	t_data;
@@ -75,6 +85,8 @@ typedef struct s_data
 long	get_time_in_ms(void);
 t_data	*parse_args(int ac, char **av);
 int		init_args(t_data *data);
+int		run_coders(t_data *data);
+int		join_coders(t_data *data);
 void	cleanup(t_data *data);
 
 #endif

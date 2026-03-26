@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/17 00:15:13 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/03/17 00:20:57 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/03/22 07:45:51 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,6 @@ void	cleanup(t_data *data)
 	}
 	free(data->coders);
 	pthread_mutex_destroy(&data->sim_mutex);
-	pthread_mutex_destroy(&data->print_mutex);
+	pthread_mutex_destroy(&data->log_mutex);
 	free(data);
 }
