@@ -6,47 +6,57 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/22 07:08:13 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/03/22 08:28:35 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/03/27 11:22:03 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-int	run_coders(t_data *data)
+int	sim_is_over(t_data *data)
+{
+	int	over;
+
+	pthread_mutex_lock(&data->sim_mutex);
+	over = data->sim_over;
+	pthread_mutex_unlock(&data->sim_mutex);
+	return (over);
+}
+
+void	run_threads(t_data *data)
 {
 	int	i;
 
+	if (pthread_create(&data->monitor_th, NULL, &monitor_routine,
+			(void *)data) != 0)
+		return ;
 	i = 0;
 	while (i < data->number_of_coders)
 	{
-		if (pthread_create(&data->coders[i].th_id, NULL, &coder,
-			(void *)data) != 0)
-			return (i);
+		if (pthread_create(&data->coders[i].th_id, NULL, &coder_routine,
+				(void *)&data->coders[i]) != 0)
+		{
+			pthread_mutex_lock(&data->sim_mutex);
+			data->sim_over = 1;
+			pthread_mutex_unlock(&data->sim_mutex);
+			broadcast_all_dongles(data);
+			data->number_of_coders = i;
+			return ;
+		}
 		i++;
 	}
-	if (pthread_create(&data->monitor_th, NULL, &monitor,
-		(void *)data) != 0)
-		return (data->number_of_coders);
-	if (pthread_create(&data->logger_th, NULL, &logger,
-		(void *)data) != 0)
-		return (data->number_of_coders);
-	return (data->number_of_coders + 2);
 }
 
-int	join_coders(t_data *data)
+void	join_threads(t_data *data)
 {
 	int	i;
 
-	if (pthread_join(data->logger_th, NULL) != 0)
-		return (0);
 	if (pthread_join(data->monitor_th, NULL) != 0)
-		return (0);
+		return ;
 	i = 0;
 	while (i < data->number_of_coders)
 	{
 		if (pthread_join(data->coders[i].th_id, NULL) != 0)
-			return (0);
+			return ;
 		i++;
 	}
-	return (1);
 }

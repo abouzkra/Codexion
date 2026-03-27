@@ -6,12 +6,11 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/15 17:59:29 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/03/17 00:22:21 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/03/27 08:09:52 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <stdio.h>
 
 static int	validate_nbr(char *str)
 {

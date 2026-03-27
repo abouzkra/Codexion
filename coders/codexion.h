@@ -6,13 +6,14 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/15 17:59:52 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/03/22 07:44:30 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/03/27 11:22:11 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CODEXION_H
 # define CODEXION_H
 
+# include <unistd.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <pthread.h>
@@ -56,8 +57,8 @@ typedef struct s_coder
 	int			id;
 	int			compile_count;
 	long		last_compile_start;
-	t_dongle	*l_dongle;
-	t_dongle	*r_dongle;
+	t_dongle	*first_dongle;
+	t_dongle	*second_dongle;
 	void		*data;
 }	t_coder;
 
@@ -83,10 +84,28 @@ typedef struct s_data
 }	t_data;
 
 long	get_time_in_ms(void);
+void	coder_sleep(long ms);
 t_data	*parse_args(int ac, char **av);
 int		init_args(t_data *data);
-int		run_coders(t_data *data);
-int		join_coders(t_data *data);
+void	log_state(t_data *data, int coder_id, char *action);
+
+int		acquire_dongle(t_coder *coder, t_dongle *dongle);
+void	release_dongle(t_dongle *dongle, long cooldown);
+void	broadcast_all_dongles(t_data *data);
+
+int		has_priority(t_waiter w1, t_waiter w2, enum e_scheduler sched);
+void	enqueue(t_waiter w, t_dongle *dongle, enum e_scheduler sched);
+void	dequeue(t_dongle *dongle);
+int		is_head(t_dongle *dongle, int coder_id);
+
+void	*coder_routine(void *arg);
+void	*monitor_routine(void *arg);
+void	*logger_routine(void *arg);
+int		sim_is_over(t_data *data);
+
+void	run_threads(t_data *data);
+void	join_threads(t_data *data);
+
 void	cleanup(t_data *data);
 
 #endif

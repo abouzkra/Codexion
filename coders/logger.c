@@ -1,37 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cleanup.c                                          :+:      :+:    :+:   */
+/*   logger.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/17 00:15:13 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/03/27 10:43:16 by abouzkra         ###   ########.fr       */
+/*   Created: 2026/03/26 08:15:41 by abouzkra          #+#    #+#             */
+/*   Updated: 2026/03/26 09:39:02 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-void	cleanup(t_data *data)
+void	log_state(t_data *data, int coder_id, char *action)
 {
-	int	i;
+	long	timestamp;
 
-	if (!data)
-		return ;
-	if (data->dongles)
-	{
-		i = 0;
-		while (i < data->number_of_coders)
-		{
-			pthread_mutex_destroy(&data->dongles[i].mutex);
-			pthread_cond_destroy(&data->dongles[i].cond);
-			i++;
-		}
-		free(data->dongles);
-	}
-	if (data->coders)
-		free(data->coders);
-	pthread_mutex_destroy(&data->sim_mutex);
-	pthread_mutex_destroy(&data->log_mutex);
-	free(data);
+	timestamp = get_time_in_ms() - data->start_time;
+	pthread_mutex_lock(&data->log_mutex);
+	printf("%ld %d %s\n", timestamp, coder_id, action);
+	pthread_mutex_unlock(&data->log_mutex);
 }

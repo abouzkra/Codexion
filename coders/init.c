@@ -6,12 +6,11 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 10:03:06 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/03/22 08:32:31 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/03/27 11:32:08 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <string.h>
 
 static int	init_mutexes(t_data *data)
 {
@@ -37,17 +36,17 @@ static int	init_dongle(t_dongle *d)
 	d->held_by = -1;
 	d->cooldown_timestamp = 0;
 	d->queue_size = 0;
-	memset(d->queue, 0, sizeof(t_waiter) * 2);
 	return (1);
 }
 
-static void	init_dongles(t_data *data)
+static int	init_dongles(t_data *data)
 {
 	int			i;
 
-	data->dongles = (t_dongle *)malloc(sizeof(t_dongle) * data->number_of_coders);
+	data->dongles = (t_dongle *)malloc(
+			sizeof(t_dongle) * data->number_of_coders);
 	if (!data->dongles)
-		return ;
+		return (0);
 	memset(data->dongles, 0, sizeof(t_dongle) * data->number_of_coders);
 	i = 0;
 	while (i < data->number_of_coders)
@@ -61,32 +60,43 @@ static void	init_dongles(t_data *data)
 			}
 			free(data->dongles);
 			data->dongles = NULL;
+			return (0);
 		}
 		i++;
 	}
+	return (1);
 }
 
-static void	init_coders(t_data *data)
+static int	init_coders(t_data *data)
 {
 	int	i;
 	int	n;
 
 	data->coders = (t_coder *)malloc(sizeof(t_coder) * data->number_of_coders);
 	if (!data->coders)
-		return ;
-	memset(data->coders, 0, sizeof(t_dongle) * data->number_of_coders);
+		return (0);
+	memset(data->coders, 0, sizeof(t_coder) * data->number_of_coders);
 	n = data->number_of_coders;
 	i = 0;
 	while (i < data->number_of_coders)
 	{
 		data->coders[i].id = i + 1;
 		data->coders[i].compile_count = 0;
-		data->coders[i].l_dongle = data->dongles + i;
-		data->coders[i].r_dongle = data->dongles + (i + 1) % n;
+		if (i == data->number_of_coders - 1)
+		{
+			data->coders[i].first_dongle = data->dongles + i;
+			data->coders[i].second_dongle = data->dongles + (i + 1) % n;
+		}
+		else
+		{
+			data->coders[i].first_dongle = data->dongles + (i + 1) % n;
+			data->coders[i].second_dongle = data->dongles + i;
+		}
 		data->coders[i].last_compile_start = data->start_time;
 		data->coders[i].data = data;
 		i++;
 	}
+	return (1);
 }
 
 int	init_args(t_data *data)
@@ -95,11 +105,9 @@ int	init_args(t_data *data)
 	data->start_time = get_time_in_ms();
 	if (!init_mutexes(data))
 		return (0);
-	init_dongles(data);
-	if (!data->dongles)
+	if (!init_dongles(data))
 		return (0);
-	init_coders(data);
-	if (!data->coders)
+	if (!init_coders(data))
 	{
 		cleanup(data);
 		return (0);

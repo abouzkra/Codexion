@@ -2,9 +2,15 @@ NAME = codexion
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -pthread
 SRCS = coders/utils.c	\
-	   coders/init.c 	\
-	   coders/cleanup.c	\
 	   coders/parser.c	\
+	   coders/init.c 	\
+	   coders/monitor.c \
+	   coders/queue.c   \
+	   coders/logger.c  \
+	   coders/coder.c   \
+	   coders/sim.c     \
+	   coders/dongle.c  \
+	   coders/cleanup.c	\
 	   coders/main.c
 OBJS = $(SRCS:.c=.o)
 RM = rm -rf
@@ -36,5 +42,8 @@ cooldown   = 100
 scheduler  = fifo
 test: $(NAME)
 	./$(NAME) $(coders) $(t_burnout) $(t_compile) $(t_debug) $(t_refactor) $(n_compiles) $(cooldown) $(scheduler)
+
+val: $(NAME)
+	valgrind --tool=helgrind ./$(NAME) $(coders) $(t_burnout) $(t_compile) $(t_debug) $(t_refactor) $(n_compiles) $(cooldown) $(scheduler)
 
 .PHONY: all clean fclean re
