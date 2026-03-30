@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 10:03:06 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/03/27 11:32:08 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/03/30 11:26:54 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static int	init_dongle(t_dongle *d)
 
 static int	init_dongles(t_data *data)
 {
-	int			i;
+	int	i;
 
 	data->dongles = (t_dongle *)malloc(
 			sizeof(t_dongle) * data->number_of_coders);
@@ -72,25 +72,25 @@ static int	init_coders(t_data *data)
 	int	i;
 	int	n;
 
-	data->coders = (t_coder *)malloc(sizeof(t_coder) * data->number_of_coders);
+	n = data->number_of_coders;
+	data->coders = (t_coder *)malloc(sizeof(t_coder) * n);
 	if (!data->coders)
 		return (0);
-	memset(data->coders, 0, sizeof(t_coder) * data->number_of_coders);
-	n = data->number_of_coders;
+	memset(data->coders, 0, sizeof(t_coder) * n);
 	i = 0;
-	while (i < data->number_of_coders)
+	while (i < n)
 	{
 		data->coders[i].id = i + 1;
 		data->coders[i].compile_count = 0;
-		if (i == data->number_of_coders - 1)
+		if (i == n - 1)
 		{
-			data->coders[i].first_dongle = data->dongles + i;
-			data->coders[i].second_dongle = data->dongles + (i + 1) % n;
+			data->coders[i].first_dongle = data->dongles + 0;
+			data->coders[i].second_dongle = data->dongles + i;
 		}
 		else
 		{
-			data->coders[i].first_dongle = data->dongles + (i + 1) % n;
-			data->coders[i].second_dongle = data->dongles + i;
+			data->coders[i].first_dongle = data->dongles + i;
+			data->coders[i].second_dongle = data->dongles + i + 1;
 		}
 		data->coders[i].last_compile_start = data->start_time;
 		data->coders[i].data = data;

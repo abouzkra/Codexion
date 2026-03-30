@@ -1,6 +1,6 @@
 NAME = codexion
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -pthread
+CFLAGS = -Wall -Wextra -Werror -pthread -fsanitize=thread
 SRCS = coders/utils.c	\
 	   coders/parser.c	\
 	   coders/init.c 	\
@@ -44,6 +44,6 @@ test: $(NAME)
 	./$(NAME) $(coders) $(t_burnout) $(t_compile) $(t_debug) $(t_refactor) $(n_compiles) $(cooldown) $(scheduler)
 
 val: $(NAME)
-	valgrind --tool=helgrind ./$(NAME) $(coders) $(t_burnout) $(t_compile) $(t_debug) $(t_refactor) $(n_compiles) $(cooldown) $(scheduler)
+	valgrind ./$(NAME) $(coders) $(t_burnout) $(t_compile) $(t_debug) $(t_refactor) $(n_compiles) $(cooldown) $(scheduler)
 
 .PHONY: all clean fclean re

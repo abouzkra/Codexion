@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/26 12:16:17 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/03/27 11:41:53 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/03/30 14:04:54 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,29 +42,6 @@ static int	all_done(t_data *data)
 	return (1);
 }
 
-void	*monitor_routine1(void *arg)
-{
-	t_data	*data;
-	int		burned_out;
-
-	data = (t_data *)arg;
-	while (1)
-	{
-		usleep(1000);
-		burned_out = burnout_check(data);
-		if (burned_out != -1 || all_done(data))
-		{
-			data->sim_over = 1;
-			if (burned_out != -1)
-				log_state(data, burned_out, "burned out");
-			broadcast_all_dongles(data);
-			return (NULL);
-		}
-		pthread_mutex_unlock(&data->sim_mutex);
-	}
-	return (NULL);
-}
-
 void	*monitor_routine(void *arg)
 {
 	t_data	*data;
@@ -73,7 +50,6 @@ void	*monitor_routine(void *arg)
 	data = (t_data *)arg;
 	while (1)
 	{
-		usleep(1000);
 		pthread_mutex_lock(&data->sim_mutex);
 		if (data->sim_over)
 		{
@@ -97,6 +73,7 @@ void	*monitor_routine(void *arg)
 			return (NULL);
 		}
 		pthread_mutex_unlock(&data->sim_mutex);
+		usleep(1000);
 	}
 	return (NULL);
 }

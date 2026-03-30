@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/17 00:13:58 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/03/26 10:10:40 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/03/30 13:55:13 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,5 +22,5 @@ long	get_time_in_ms(void)
 
 void	coder_sleep(long ms)
 {
-	usleep((useconds_t) ms * 1000);
+	usleep((useconds_t)(ms * 1000));
 }
