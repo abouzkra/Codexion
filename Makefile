@@ -34,10 +34,10 @@ re: fclean all
 
 coders	   = 5
 t_burnout  = 800
-t_compile  = 200
-t_debug	   = 200
-t_refactor = 200
-n_compiles = 7
+t_compile  = 100
+t_debug	   = 100
+t_refactor = 100
+n_compiles = 2
 cooldown   = 100
 scheduler  = fifo
 test: $(NAME)

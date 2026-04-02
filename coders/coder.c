@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/26 08:39:49 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/03/30 13:54:19 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/04/01 11:30:10 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,18 +25,10 @@ static int	compile(t_coder *coder, t_data *data)
 	log_state(data, coder->id, "has taken a dongle");
 	pthread_mutex_lock(&data->sim_mutex);
 	coder->last_compile_start = get_time_in_ms();
+	coder->compile_count++;
 	pthread_mutex_unlock(&data->sim_mutex);
 	log_state(data, coder->id, "is compiling");
 	coder_sleep(data->time_to_compile);
-	if (sim_is_over(data))
-	{
-		release_dongle(coder->first_dongle, data->dongle_cooldown);
-		release_dongle(coder->second_dongle, data->dongle_cooldown);
-		return (0);
-	}
-	pthread_mutex_lock(&data->sim_mutex);
-	coder->compile_count++;
-	pthread_mutex_unlock(&data->sim_mutex);
 	release_dongle(coder->first_dongle, data->dongle_cooldown);
 	release_dongle(coder->second_dongle, data->dongle_cooldown);
 	return (1);
@@ -52,7 +44,8 @@ void	*coder_routine(void *arg)
 	pthread_mutex_lock(&data->sim_mutex);
 	coder->last_compile_start = get_time_in_ms();
 	pthread_mutex_unlock(&data->sim_mutex);
-	while (!sim_is_over(data))
+	while (coder->compile_count != data->number_of_compiles_required
+		&& !sim_is_over(data))
 	{
 		if (!compile(coder, data))
 			break ;

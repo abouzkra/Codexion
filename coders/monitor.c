@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/26 12:16:17 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/03/30 14:04:54 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/04/01 11:29:47 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	*monitor_routine(void *arg)
 		if (data->sim_over)
 		{
 			pthread_mutex_unlock(&data->sim_mutex);
-			return (NULL);
+			break ;
 		}
 		burned_id = burnout_check(data);
 		if (burned_id != -1)
@@ -63,14 +63,15 @@ void	*monitor_routine(void *arg)
 			pthread_mutex_unlock(&data->sim_mutex);
 			log_state(data, burned_id, "burned out");
 			broadcast_all_dongles(data);
-			return (NULL);
+			break ;
 		}
 		if (all_done(data))
 		{
+			log_state(data, -1, "All coders finished");
 			data->sim_over = 1;
 			pthread_mutex_unlock(&data->sim_mutex);
 			broadcast_all_dongles(data);
-			return (NULL);
+			break ;
 		}
 		pthread_mutex_unlock(&data->sim_mutex);
 		usleep(1000);

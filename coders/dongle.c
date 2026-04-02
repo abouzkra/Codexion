@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/26 10:10:29 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/03/30 14:10:26 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/04/01 11:35:43 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	acquire_dongle(t_coder *coder, t_dongle *dongle)
 	enqueue(coder_q, dongle, ((t_data *)coder->data)->scheduler);
 	while (!dongle_ready(dongle, coder->id))
 	{
-		if (data->sim_over)
+		if (sim_is_over(data))
 		{
 			if (is_head(dongle, coder->id))
 				dequeue(dongle);
