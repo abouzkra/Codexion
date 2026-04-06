@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/26 12:16:17 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/04/01 11:29:47 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/04/06 10:37:48 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,39 +42,36 @@ static int	all_done(t_data *data)
 	return (1);
 }
 
+static int	check_sim_state(t_data *data)
+{
+	int	burned_id;
+
+	pthread_mutex_lock(&data->sim_mutex);
+	if (data->sim_over)
+	{
+		pthread_mutex_unlock(&data->sim_mutex);
+		return (1);
+	}
+	burned_id = burnout_check(data);
+	if (burned_id != -1 || all_done(data))
+	{
+		data->sim_over = 1;
+		pthread_mutex_unlock(&data->sim_mutex);
+		if (burned_id != -1)
+			log_state(data, burned_id, "burned out");
+		broadcast_all_dongles(data);
+		return (1);
+	}
+	pthread_mutex_unlock(&data->sim_mutex);
+	return (0);
+}
+
 void	*monitor_routine(void *arg)
 {
 	t_data	*data;
-	int		burned_id;
 
 	data = (t_data *)arg;
-	while (1)
-	{
-		pthread_mutex_lock(&data->sim_mutex);
-		if (data->sim_over)
-		{
-			pthread_mutex_unlock(&data->sim_mutex);
-			break ;
-		}
-		burned_id = burnout_check(data);
-		if (burned_id != -1)
-		{
-			data->sim_over = 1;
-			pthread_mutex_unlock(&data->sim_mutex);
-			log_state(data, burned_id, "burned out");
-			broadcast_all_dongles(data);
-			break ;
-		}
-		if (all_done(data))
-		{
-			log_state(data, -1, "All coders finished");
-			data->sim_over = 1;
-			pthread_mutex_unlock(&data->sim_mutex);
-			broadcast_all_dongles(data);
-			break ;
-		}
-		pthread_mutex_unlock(&data->sim_mutex);
+	while (!check_sim_state(data))
 		usleep(1000);
-	}
 	return (NULL);
 }
