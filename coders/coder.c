@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/26 08:39:49 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/04/06 11:49:21 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/04/11 15:08:00 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,28 +68,6 @@ static int	compile(t_coder *coder, t_data *data)
 	}
 	return (res);
 }
-
-// static int	compile(t_coder *coder, t_data *data)
-// {
-// 	if (!acquire_dongle(coder, coder->first_dongle))
-// 		return (0);
-// 	log_state(data, coder->id, "has taken a dongle");
-// 	if (!acquire_dongle(coder, coder->second_dongle))
-// 	{
-// 		release_dongle(coder->first_dongle, data->dongle_cooldown);
-// 		return (0);
-// 	}
-// 	log_state(data, coder->id, "has taken a dongle");
-// 	pthread_mutex_lock(&data->sim_mutex);
-// 	coder->last_compile_start = get_time_in_ms();
-// 	coder->compile_count++;
-// 	pthread_mutex_unlock(&data->sim_mutex);
-// 	log_state(data, coder->id, "is compiling");
-// 	coder_sleep(data->time_to_compile);
-// 	release_dongle(coder->first_dongle, data->dongle_cooldown);
-// 	release_dongle(coder->second_dongle, data->dongle_cooldown);
-// 	return (1);
-// }
 
 void	*coder_routine(void *arg)
 {
