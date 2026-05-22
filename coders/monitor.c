@@ -64,7 +64,7 @@ void	*monitor_routine(void *arg)
 		if (burned_out > -1 || all_finished(data))
 		{
 			if (burned_out > -1)
-				log_state(data, burned_out, "burned out");
+				log_state(data, data->coders[burned_out].id, "burned out");
 			pthread_mutex_lock(&data->sim_mut);
 			data->sim_over = 1;
 			pthread_mutex_unlock(&data->sim_mut);

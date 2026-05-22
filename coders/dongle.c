@@ -42,10 +42,11 @@ int	acquire_dongle(t_coder *coder, t_dongle *dongle)
 	pthread_mutex_unlock(&data->sim_mut);
 	pthread_mutex_lock(&dongle->mut);
 	insert(dongle, coder);
-	while (!is_available(dongle))
+	while (!is_top(coder, dongle) || !is_available(dongle))
 	{
 		if (sim_is_over(data))
 		{
+			pop(dongle);
 			pthread_mutex_unlock(&dongle->mut);
 			return (0);
 		}

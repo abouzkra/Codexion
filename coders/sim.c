@@ -24,13 +24,10 @@ int	sim_is_over(t_data *data)
 
 void	log_state(t_data *data, int coder_id, char *msg)
 {
-	long	ts;
-
 	if (sim_is_over(data))
 		return ;
-	ts = get_time_in_ms() - data->start_time;
 	pthread_mutex_lock(&data->logger_mut);
-	printf("%ld %d %s\n", ts, coder_id, msg);
+	printf("%ld %d %s\n", get_time_in_ms() - data->start_time, coder_id, msg);
 	pthread_mutex_unlock(&data->logger_mut);
 }
 

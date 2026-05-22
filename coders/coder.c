@@ -75,6 +75,5 @@ void	*coder_routine(void *arg)
 		log_state(data, coder->id, "is refactoring");
 		coder_sleep(data->t_refactor);
 	}
-	log_state(data, coder->id, "finished");
 	return (NULL);
 }

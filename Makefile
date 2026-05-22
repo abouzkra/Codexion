@@ -31,13 +31,13 @@ fclean: clean
 
 re: fclean all
 
-coders	   = 5
+coders	   = 199
 t_burnout  = 800
 t_compile  = 100
 t_debug	   = 200
 t_refactor = 200
 n_compiles = 2
-cooldown   = 200
+cooldown   = 100
 scheduler  = fifo
 
 test: $(NAME)
