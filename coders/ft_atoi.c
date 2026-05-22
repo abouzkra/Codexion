@@ -1,37 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cleanup.c                                          :+:      :+:    :+:   */
+/*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/17 00:15:13 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/03/27 10:43:16 by abouzkra         ###   ########.fr       */
+/*   Created: 2026/05/09 15:58:14 by abouzkra          #+#    #+#             */
+/*   Updated: 2026/05/09 17:31:34 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-void	cleanup(t_data *data)
+int	ft_atoi(const char *nptr)
 {
-	int	i;
+	long long unsigned	res;
+	int					digit;
 
-	if (!data)
-		return ;
-	if (data->dongles)
+	if (!nptr || !*nptr)
+		return (-1);
+	while (*nptr == ' ' || (*nptr <= 13 && *nptr >= 9))
+		nptr++;
+	if (*nptr == '+')
+		nptr++;
+	if (*nptr == '-')
+		return (-1);
+	res = 0;
+	while (*nptr)
 	{
-		i = 0;
-		while (i < data->number_of_coders)
-		{
-			pthread_mutex_destroy(&data->dongles[i].mutex);
-			pthread_cond_destroy(&data->dongles[i].cond);
-			i++;
-		}
-		free(data->dongles);
+		if (*nptr < '0' || *nptr > '9')
+			return (-1);
+		digit = *nptr - '0';
+		res = res * 10 + digit;
+		if (res > INT_MAX)
+			return (-1);
+		nptr++;
 	}
-	if (data->coders)
-		free(data->coders);
-	pthread_mutex_destroy(&data->sim_mutex);
-	pthread_mutex_destroy(&data->log_mutex);
-	free(data);
+	return ((int)(res));
 }

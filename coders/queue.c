@@ -5,47 +5,84 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/26 12:40:39 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/04/11 15:15:18 by abouzkra         ###   ########.fr       */
+/*   Created: 2026/05/20 16:57:10 by abouzkra          #+#    #+#             */
+/*   Updated: 2026/05/22 00:01:03 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-int	has_priority(t_waiter w1, t_waiter w2, enum e_scheduler sched)
+static void	swap(t_coder **c1, t_coder **c2)
 {
-	if (sched == FIFO)
-		return (w1.arrival_time < w2.arrival_time);
-	return (w1.deadline < w2.deadline);
+	t_coder	*tmp;
+
+	tmp = *c1;
+	*c1 = *c2;
+	*c2 = tmp;
 }
 
-void	enqueue(t_waiter w, t_dongle *dongle, enum e_scheduler sched)
+static void	bubble_up(t_dongle *dg, int idx)
 {
-	if (dongle->queue_size == 0)
+	int	parent;
+	int	i;
+
+	i = idx;
+	while (i > 0)
 	{
-		dongle->queue[0] = w;
-		dongle->queue_size = 1;
-		return ;
+		parent = (i - 1) / 2;
+		if (has_priority(dg->queue[i], dg->queue[parent]))
+			swap(dg->queue + parent, dg->queue + i);
+		else
+			break ;
+		i = parent;
 	}
-	if (has_priority(w, dongle->queue[0], sched))
+}
+
+static void	bubble_down(t_dongle *dg, int idx)
+{
+	int	i;
+	int	l_child;
+	int	r_child;
+	int	best_child;
+
+	i = idx;
+	while ((i * 2) + 1 < dg->queue_size)
 	{
-		dongle->queue[1] = dongle->queue[0];
-		dongle->queue[0] = w;
+		l_child = i * 2 + 1;
+		r_child = i * 2 + 2;
+		best_child = l_child;
+		if (r_child < dg->queue_size
+			&& has_priority(dg->queue[r_child], dg->queue[l_child]))
+			best_child = r_child;
+		if (has_priority(dg->queue[best_child], dg->queue[i]))
+		{
+			swap(dg->queue + best_child, dg->queue + i);
+			i = best_child;
+		}
+		else
+			break ;
 	}
-	else
-		dongle->queue[1] = w;
-	dongle->queue_size = 2;
 }
 
-void	dequeue(t_dongle *dongle)
+void	insert(t_dongle *dg, t_coder *coder)
 {
-	if (dongle->queue_size == 0)
+	if (dg->queue_size == 2)
 		return ;
-	dongle->queue[0] = dongle->queue[1];
-	dongle->queue_size--;
+	dg->queue[dg->queue_size] = coder;
+	dg->queue_size++;
+	bubble_up(dg, dg->queue_size - 1);
 }
 
-int	is_head(t_dongle *dongle, int coder_id)
+int	pop(t_dongle *dg)
 {
-	return (dongle->queue_size > 0 && dongle->queue[0].coder == coder_id);
+	int	top;
+
+	if (dg->queue_size == 0)
+		return (-1);
+	top = dg->queue[0]->id;
+	dg->queue[0] = dg->queue[dg->queue_size - 1];
+	dg->queue_size--;
+	if (dg->queue_size > 0)
+		bubble_down(dg, 0);
+	return (top);
 }

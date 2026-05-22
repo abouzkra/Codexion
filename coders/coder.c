@@ -5,68 +5,54 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/26 08:39:49 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/04/11 15:08:00 by abouzkra         ###   ########.fr       */
+/*   Created: 2026/05/21 18:21:07 by abouzkra          #+#    #+#             */
+/*   Updated: 2026/05/22 00:09:52 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-void	init_coder(t_data *data, int i)
+int	has_priority(t_coder *c1, t_coder *c2)
 {
-	int	n;
+	enum e_scheduler	sched;
 
-	n = data->number_of_coders;
-	data->coders[i].id = i + 1;
-	data->coders[i].compile_count = 0;
-	data->coders[i].last_compile_start = data->start_time;
-	data->coders[i].data = data;
-	if ((i + 1) % 2 != 0)
-	{
-		data->coders[i].first_dongle = data->dongles + i;
-		data->coders[i].second_dongle = data->dongles + (i + 1) % n;
-	}
-	else
-	{
-		data->coders[i].first_dongle = data->dongles + (i + 1) % n;
-		data->coders[i].second_dongle = data->dongles + i;
-	}
+	sched = ((t_data *)c1->data)->scheduler;
+	if (sched == FIFO && c1->arrival_time != c2->arrival_time)
+		return (c1->arrival_time < c2->arrival_time);
+	else if (sched == EDF && c1->deadline != c2->deadline)
+		return (c1->deadline < c2->deadline);
+	else if (c1->compile_count != c2->compile_count)
+		return (c1->compile_count < c2->compile_count);
+	return (c1->id < c2->id);
 }
 
-static int	try_compile(t_coder *coder, t_data *data)
+int	is_top(t_coder *coder, t_dongle *dongle)
+{
+	return (dongle->queue_size > 0 && coder == dongle->queue[0]);
+}
+
+int	compile(t_coder *coder)
 {
 	if (!acquire_dongle(coder, coder->first_dongle))
 		return (0);
-	log_state(data, coder->id, "has taken a dongle");
+	log_state((t_data *)coder->data, coder->id, "has taken a dongle");
 	if (!acquire_dongle(coder, coder->second_dongle))
 	{
-		release_dongle(coder->first_dongle, data->dongle_cooldown);
-		return (-1);
+		release_dongle(coder->first_dongle, 0);
+		return (0);
 	}
-	log_state(data, coder->id, "has taken a dongle");
-	pthread_mutex_lock(&data->sim_mutex);
-	coder->last_compile_start = get_time_in_ms();
+	log_state((t_data *)coder->data, coder->id, "has taken a dongle");
+	pthread_mutex_lock(&((t_data *)coder->data)->sim_mut);
+	coder->last_compile = get_time_in_ms();
+	pthread_mutex_unlock(&((t_data *)coder->data)->sim_mut);
+	log_state((t_data *)coder->data, coder->id, "is compiling");
+	coder_sleep(((t_data *)coder->data)->t_compile);
+	pthread_mutex_lock(&((t_data *)coder->data)->sim_mut);
 	coder->compile_count++;
-	pthread_mutex_unlock(&data->sim_mutex);
-	log_state(data, coder->id, "is compiling");
-	coder_sleep(data->time_to_compile);
-	release_dongle(coder->first_dongle, data->dongle_cooldown);
-	release_dongle(coder->second_dongle, data->dongle_cooldown);
+	pthread_mutex_unlock(&((t_data *)coder->data)->sim_mut);
+	release_dongle(coder->first_dongle, ((t_data *)coder->data)->cooldown);
+	release_dongle(coder->second_dongle, ((t_data *)coder->data)->cooldown);
 	return (1);
-}
-
-static int	compile(t_coder *coder, t_data *data)
-{
-	int	res;
-
-	res = -1;
-	while (res == -1)
-	{
-		if (sim_is_over(data))
-			return (0);
-		res = try_compile(coder, data);
-	}
-	return (res);
 }
 
 void	*coder_routine(void *arg)
@@ -75,22 +61,20 @@ void	*coder_routine(void *arg)
 	t_data	*data;
 
 	coder = (t_coder *)arg;
-	data = coder->data;
-	pthread_mutex_lock(&data->sim_mutex);
-	coder->last_compile_start = get_time_in_ms();
-	pthread_mutex_unlock(&data->sim_mutex);
+	data = (t_data *)coder->data;
 	while (!sim_is_over(data))
 	{
-		if (!compile(coder, data))
+		if (!compile(coder))
 			break ;
 		if (sim_is_over(data))
 			break ;
 		log_state(data, coder->id, "is debugging");
-		coder_sleep(data->time_to_debug);
+		coder_sleep(data->t_debug);
 		if (sim_is_over(data))
 			break ;
 		log_state(data, coder->id, "is refactoring");
-		coder_sleep(data->time_to_refactor);
+		coder_sleep(data->t_refactor);
 	}
+	log_state(data, coder->id, "finished");
 	return (NULL);
 }

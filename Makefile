@@ -1,17 +1,15 @@
 NAME = codexion
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -pthread -fsanitize=thread
-SRCS = coders/utils.c		  \
-	   coders/parser.c		  \
-	   coders/init.c 		  \
-	   coders/monitor.c 	  \
-	   coders/queue.c   	  \
-	   coders/logger.c  	  \
-	   coders/coder.c   	  \
-	   coders/sim.c     	  \
-	   coders/dongle.c  	  \
-	   coders/dongle_utils.c  \
-	   coders/cleanup.c		  \
+CFLAGS = -Wall -Wextra -Werror -pthread
+SRCS = coders/ft_atoi.c \
+	   coders/queue.c	\
+	   coders/parser.c	\
+	   coders/monitor.c	\
+	   coders/dongle.c	\
+	   coders/coder.c	\
+	   coders/init.c	\
+	   coders/utils.c	\
+	   coders/sim.c		\
 	   coders/main.c
 OBJS = $(SRCS:.c=.o)
 RM = rm -rf
@@ -33,18 +31,19 @@ fclean: clean
 
 re: fclean all
 
-coders	   = 4
-t_burnout  = 400
+coders	   = 5
+t_burnout  = 800
 t_compile  = 100
-t_debug	   = 100
-t_refactor = 100
-n_compiles = 3
-cooldown   = 50
+t_debug	   = 200
+t_refactor = 200
+n_compiles = 2
+cooldown   = 200
 scheduler  = fifo
+
 test: $(NAME)
 	./$(NAME) $(coders) $(t_burnout) $(t_compile) $(t_debug) $(t_refactor) $(n_compiles) $(cooldown) $(scheduler)
 
 val: $(NAME)
-	valgrind ./$(NAME) $(coders) $(t_burnout) $(t_compile) $(t_debug) $(t_refactor) $(n_compiles) $(cooldown) $(scheduler)
+	valgrind --tool=helgrind ./$(NAME) $(coders) $(t_burnout) $(t_compile) $(t_debug) $(t_refactor) $(n_compiles) $(cooldown) $(scheduler)
 
 .PHONY: all clean fclean re

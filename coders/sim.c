@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/22 07:08:13 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/04/01 09:42:28 by abouzkra         ###   ########.fr       */
+/*   Created: 2026/05/20 16:32:18 by abouzkra          #+#    #+#             */
+/*   Updated: 2026/05/21 23:22:35 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,44 +16,59 @@ int	sim_is_over(t_data *data)
 {
 	int	over;
 
-	pthread_mutex_lock(&data->sim_mutex);
+	pthread_mutex_lock(&data->sim_mut);
 	over = data->sim_over;
-	pthread_mutex_unlock(&data->sim_mutex);
+	pthread_mutex_unlock(&data->sim_mut);
 	return (over);
 }
 
-void	run_threads(t_data *data)
+void	log_state(t_data *data, int coder_id, char *msg)
+{
+	long	ts;
+
+	if (sim_is_over(data))
+		return ;
+	ts = get_time_in_ms() - data->start_time;
+	pthread_mutex_lock(&data->logger_mut);
+	printf("%ld %d %s\n", ts, coder_id, msg);
+	pthread_mutex_unlock(&data->logger_mut);
+}
+
+void	start_sim(t_data *data)
 {
 	int	i;
 
-	if (pthread_create(&data->monitor_th, NULL, &monitor_routine,
-			(void *)data) != 0)
-		return ;
 	i = 0;
-	while (i < data->number_of_coders)
+	while (i < data->n_coders)
 	{
-		if (pthread_create(&data->coders[i].th_id, NULL, &coder_routine,
+		if (pthread_create(&data->coders[i].th_id, NULL, coder_routine,
 				(void *)&data->coders[i]) != 0)
 		{
-			pthread_mutex_lock(&data->sim_mutex);
+			pthread_mutex_lock(&data->sim_mut);
 			data->sim_over = 1;
-			pthread_mutex_unlock(&data->sim_mutex);
-			broadcast_all_dongles(data);
-			data->number_of_coders = i;
+			pthread_mutex_unlock(&data->sim_mut);
+			data->n_coders = i;
 			return ;
 		}
 		i++;
 	}
+	if (pthread_create(&data->monitor_th,
+			NULL, monitor_routine, (void *)data) != 0)
+	{
+		pthread_mutex_lock(&data->sim_mut);
+		data->sim_over = 1;
+		pthread_mutex_unlock(&data->sim_mut);
+	}
 }
 
-void	join_threads(t_data *data)
+void	end_sim(t_data *data)
 {
 	int	i;
 
-	if (pthread_join(data->monitor_th, NULL) != 0)
-		return ;
+	if (data->monitor_th)
+		pthread_join(data->monitor_th, NULL);
 	i = 0;
-	while (i < data->number_of_coders)
+	while (i < data->n_coders)
 	{
 		if (pthread_join(data->coders[i].th_id, NULL) != 0)
 			return ;

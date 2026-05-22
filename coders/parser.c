@@ -5,78 +5,58 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/15 17:59:29 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/03/27 08:09:52 by abouzkra         ###   ########.fr       */
+/*   Created: 2026/05/09 15:47:18 by abouzkra          #+#    #+#             */
+/*   Updated: 2026/05/09 18:55:28 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-static int	validate_nbr(char *str)
+static void	convert_args(char *av[], t_data *data)
 {
-	int	i;
+	data->n_coders = ft_atoi(av[1]);
+	data->t_burnout = ft_atoi(av[2]);
+	data->t_compile = ft_atoi(av[3]);
+	data->t_debug = ft_atoi(av[4]);
+	data->t_refactor = ft_atoi(av[5]);
+	data->n_compiles = ft_atoi(av[6]);
+	data->cooldown = ft_atoi(av[7]);
+	data->scheduler = -1;
+	if (strcmp(av[8], "fifo") == 0)
+		data->scheduler = FIFO;
+	if (strcmp(av[8], "edf") == 0)
+		data->scheduler = EDF;
+}
 
-	i = 0;
-	if (str[i] == '+')
-		i++;
-	if (!str[i])
+static int	validate_args(t_data *data)
+{
+	if (data->n_coders == -1
+		|| data->t_burnout == -1
+		|| data->t_compile == -1
+		|| data->t_debug == -1
+		|| data->t_refactor == -1
+		|| data->n_compiles == -1
+		|| data->cooldown == -1
+		|| data->scheduler == -1
+	)
 		return (0);
-	while (str[i])
-	{
-		if (str[i] < '0' || str[i] > '9')
-			return (0);
-		i++;
-	}
 	return (1);
 }
 
-static int	validate_args(char **av)
-{
-	int	i;
-
-	i = 1;
-	while (i < 8)
-	{
-		if (!validate_nbr(av[i]))
-			return (0);
-		i++;
-	}
-	return (strcmp("fifo", av[8]) == 0 || strcmp("edf", av[8]) == 0);
-}
-
-static void	convert_args(char **av, t_data *data)
-{
-	data->number_of_coders = atoi(av[1]);
-	data->time_to_burnout = atoi(av[2]);
-	data->time_to_compile = atoi(av[3]);
-	data->time_to_debug = atoi(av[4]);
-	data->time_to_refactor = atoi(av[5]);
-	data->number_of_compiles_required = atoi(av[6]);
-	data->dongle_cooldown = atoi(av[7]);
-	if (strcmp("fifo", av[8]) == 0)
-		data->scheduler = FIFO;
-	else if (strcmp("edf", av[8]) == 0)
-		data->scheduler = EDF;
-	data->dongles = NULL;
-	data->coders = NULL;
-}
-
-t_data	*parse_args(int ac, char **av)
+t_data	*parse_args(int ac, char *av[])
 {
 	t_data	*data;
 
 	if (ac != 9)
-		return (NULL);
-	if (!validate_args(av))
 		return (NULL);
 	data = (t_data *)malloc(sizeof(t_data));
 	if (!data)
 		return (NULL);
 	memset(data, 0, sizeof(t_data));
 	convert_args(av, data);
-	if (!init_args(data))
+	if (!validate_args(data))
 	{
-		perror("Error while initializing args\n");
+		free(data);
 		return (NULL);
 	}
 	return (data);
