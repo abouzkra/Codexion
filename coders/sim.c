@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/20 16:32:18 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/05/21 23:22:35 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/18 20:30:30 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,10 @@ int	sim_is_over(t_data *data)
 
 void	log_state(t_data *data, int coder_id, char *msg)
 {
-	if (sim_is_over(data))
-		return ;
 	pthread_mutex_lock(&data->logger_mut);
-	printf("%ld %d %s\n", get_time_in_ms() - data->start_time, coder_id, msg);
+	if (!sim_is_over(data))
+		printf("%ld %d %s\n",
+			get_time_in_ms() - data->start_time, coder_id, msg);
 	pthread_mutex_unlock(&data->logger_mut);
 }
 

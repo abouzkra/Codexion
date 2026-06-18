@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 15:27:58 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/05/21 22:38:08 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/18 12:59:51 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ enum	e_scheduler
 	EDF
 };
 
+typedef struct s_data	t_data;
 typedef struct s_dongle	t_dongle;
 
 typedef struct s_coder
@@ -38,7 +39,7 @@ typedef struct s_coder
 	long		last_compile;
 	t_dongle	*first_dongle;
 	t_dongle	*second_dongle;
-	void		*data;
+	t_data		*data;
 
 	long		arrival_time;
 	long		deadline;
@@ -88,7 +89,8 @@ int				init_sim(t_data *data);
 
 int				has_priority(t_coder *c1, t_coder *c2);
 int				is_top(t_coder *coder, t_dongle *dongle);
-int				acquire_dongle(t_coder *coder, t_dongle *dongle);
+// int				acquire_dongle(t_coder *coder, t_dongle *dongle);
+int				acquire_dongles(t_coder *coder);
 void			release_dongle(t_dongle *dongle, long cooldown);
 void			broadcast_dongles(t_data *data);
 

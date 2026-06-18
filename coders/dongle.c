@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/21 19:19:30 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/05/22 00:12:42 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/18 20:31:49 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,45 +17,46 @@ static int	is_available(t_dongle *dongle)
 	return (dongle->held_by == -1 && dongle->cooldown_ts <= get_time_in_ms());
 }
 
-static void	wait_dongle(t_coder *coder, t_dongle *dongle)
+int	acquire_dongles(t_coder *coder)
 {
-	struct timespec	timeout;
-
-	if (is_top(coder, dongle) && dongle->held_by == -1
-		&& dongle->cooldown_ts > get_time_in_ms())
+	if (coder->first_dongle == coder->second_dongle)
 	{
-		timeout = ms_to_ts(dongle->cooldown_ts);
-		pthread_cond_timedwait(&dongle->cond, &dongle->mut, &timeout);
+		coder_sleep(coder->data->t_burnout);
+		return (0);
 	}
-	else
-		pthread_cond_wait(&dongle->cond, &dongle->mut);
-}
-
-int	acquire_dongle(t_coder *coder, t_dongle *dongle)
-{
-	t_data	*data;
-
-	data = (t_data *)coder->data;
-	pthread_mutex_lock(&data->sim_mut);
-	coder->arrival_time = get_time_in_ms();
-	coder->deadline = coder->last_compile + data->t_burnout;
-	pthread_mutex_unlock(&data->sim_mut);
-	pthread_mutex_lock(&dongle->mut);
-	insert(dongle, coder);
-	while (!is_top(coder, dongle) || !is_available(dongle))
+	pthread_mutex_lock(&coder->first_dongle->mut);
+	pthread_mutex_lock(&coder->second_dongle->mut);
+	insert(coder->first_dongle, coder);
+	insert(coder->second_dongle, coder);
+	pthread_mutex_unlock(&coder->first_dongle->mut);
+	pthread_mutex_unlock(&coder->second_dongle->mut);
+	while (!sim_is_over(coder->data))
 	{
-		if (sim_is_over(data))
+		pthread_mutex_lock(&coder->first_dongle->mut);
+		if (!is_top(coder, coder->first_dongle)
+			|| !is_available(coder->first_dongle))
 		{
-			pop(dongle);
-			pthread_mutex_unlock(&dongle->mut);
-			return (0);
+			pthread_mutex_unlock(&coder->first_dongle->mut);
+			usleep(500);
+			continue ;
 		}
-		wait_dongle(coder, dongle);
+		pthread_mutex_lock(&coder->second_dongle->mut);
+		if (is_top(coder, coder->second_dongle)
+			&& is_available(coder->second_dongle))
+		{
+			coder->first_dongle->held_by = coder->id;
+			coder->second_dongle->held_by = coder->id;
+			pop(coder->first_dongle);
+			pop(coder->second_dongle);
+			pthread_mutex_unlock(&coder->first_dongle->mut);
+			pthread_mutex_unlock(&coder->second_dongle->mut);
+			return (1);
+		}
+		pthread_mutex_unlock(&coder->first_dongle->mut);
+		pthread_mutex_unlock(&coder->second_dongle->mut);
+		usleep(500);
 	}
-	pop(dongle);
-	dongle->held_by = coder->id;
-	pthread_mutex_unlock(&dongle->mut);
-	return (1);
+	return (0);
 }
 
 void	release_dongle(t_dongle *dongle, long cooldown)

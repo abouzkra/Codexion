@@ -31,19 +31,16 @@ fclean: clean
 
 re: fclean all
 
-coders	   = 199
-t_burnout  = 800
+coders	   = 5
+t_burnout  = 2130
 t_compile  = 100
-t_debug	   = 200
-t_refactor = 200
-n_compiles = 2
-cooldown   = 100
+t_debug	   = 100
+t_refactor = 100
+n_compiles = 10
+cooldown   = 600
 scheduler  = fifo
 
 test: $(NAME)
 	./$(NAME) $(coders) $(t_burnout) $(t_compile) $(t_debug) $(t_refactor) $(n_compiles) $(cooldown) $(scheduler)
-
-val: $(NAME)
-	valgrind --tool=helgrind ./$(NAME) $(coders) $(t_burnout) $(t_compile) $(t_debug) $(t_refactor) $(n_compiles) $(cooldown) $(scheduler)
 
 .PHONY: all clean fclean re

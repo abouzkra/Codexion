@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/21 18:21:07 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/05/22 00:09:52 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/18 20:31:16 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@ int	has_priority(t_coder *c1, t_coder *c2)
 	sched = ((t_data *)c1->data)->scheduler;
 	if (sched == FIFO && c1->arrival_time != c2->arrival_time)
 		return (c1->arrival_time < c2->arrival_time);
-	else if (sched == EDF && c1->deadline != c2->deadline)
-		return (c1->deadline < c2->deadline);
+	else if (sched == EDF && c1->last_compile != c2->last_compile)
+		return (c1->last_compile < c2->last_compile);
 	else if (c1->compile_count != c2->compile_count)
 		return (c1->compile_count < c2->compile_count);
 	return (c1->id < c2->id);
@@ -33,17 +33,13 @@ int	is_top(t_coder *coder, t_dongle *dongle)
 
 int	compile(t_coder *coder)
 {
-	if (!acquire_dongle(coder, coder->first_dongle))
+	if (!acquire_dongles(coder))
 		return (0);
 	log_state((t_data *)coder->data, coder->id, "has taken a dongle");
-	if (!acquire_dongle(coder, coder->second_dongle))
-	{
-		release_dongle(coder->first_dongle, 0);
-		return (0);
-	}
 	log_state((t_data *)coder->data, coder->id, "has taken a dongle");
 	pthread_mutex_lock(&((t_data *)coder->data)->sim_mut);
 	coder->last_compile = get_time_in_ms();
+	coder->deadline = coder->last_compile + coder->data->t_burnout;
 	pthread_mutex_unlock(&((t_data *)coder->data)->sim_mut);
 	log_state((t_data *)coder->data, coder->id, "is compiling");
 	coder_sleep(((t_data *)coder->data)->t_compile);
@@ -61,7 +57,9 @@ void	*coder_routine(void *arg)
 	t_data	*data;
 
 	coder = (t_coder *)arg;
-	data = (t_data *)coder->data;
+	data = (t_data *)coder->data; // check if simulation started
+	if (coder->id % 2 == 0)
+		coder_sleep((data->t_compile + data->cooldown) / 4);
 	while (!sim_is_over(data))
 	{
 		if (!compile(coder))
