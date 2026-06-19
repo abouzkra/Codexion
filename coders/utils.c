@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 18:13:31 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/18 13:20:06 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/19 18:07:16 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,32 @@ long	get_time_in_ms(void)
 	return ((long)(tv.tv_sec * 1000) + (long)(tv.tv_usec / 1000));
 }
 
-// TODO: refactor using timedwait
-void	coder_sleep(long ms)
+void	coder_sleep(t_data *data, long ms)
 {
-	usleep((useconds_t)(ms * 1000));
+	struct timespec	ts;
+	long			target_ms;
+
+	target_ms = get_time_in_ms() + ms;
+	ts.tv_sec = target_ms / 1000;
+	ts.tv_nsec = (target_ms % 1000) * 1000000;
+	pthread_mutex_lock(&data->sim_mut);
+	while (data->sim_state != OVER && get_time_in_ms() < target_ms)
+		pthread_cond_timedwait(&data->sleep_cond, &data->sim_mut, &ts);
+	pthread_mutex_unlock(&data->sim_mut);
+}
+
+int	all_threads_started(t_data *data)
+{
+	pthread_mutex_lock(&data->sim_mut);
+	while (data->sim_state != STARTED && data->sim_state != OVER)
+		pthread_cond_wait(&data->sim_cond, &data->sim_mut);
+	if (data->sim_state == OVER)
+	{
+		pthread_mutex_unlock(&data->sim_mut);
+		return (0);
+	}
+	pthread_mutex_unlock(&data->sim_mut);
+	return (1);
 }
 
 struct timespec	ms_to_ts(long ms)
@@ -32,4 +54,31 @@ struct timespec	ms_to_ts(long ms)
 		.tv_sec = ms / 1000,
 		.tv_nsec = (ms % 1000) * 1000000
 	});
+}
+
+int	ft_atoi(const char *nptr)
+{
+	long long unsigned	res;
+	int					digit;
+
+	if (!nptr || !*nptr)
+		return (-1);
+	while (*nptr == ' ' || (*nptr <= 13 && *nptr >= 9))
+		nptr++;
+	if (*nptr == '+')
+		nptr++;
+	if (*nptr == '-')
+		return (-1);
+	res = 0;
+	while (*nptr)
+	{
+		if (*nptr < '0' || *nptr > '9')
+			return (-1);
+		digit = *nptr - '0';
+		res = res * 10 + digit;
+		if (res > INT_MAX)
+			return (-1);
+		nptr++;
+	}
+	return ((int)(res));
 }

@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 15:27:58 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/18 12:59:51 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/19 16:33:38 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,12 @@ enum	e_scheduler
 	EDF
 };
 
+enum	e_sim_state
+{
+	STARTED,
+	OVER
+};
+
 typedef struct s_data	t_data;
 typedef struct s_dongle	t_dongle;
 
@@ -42,7 +48,6 @@ typedef struct s_coder
 	t_data		*data;
 
 	long		arrival_time;
-	long		deadline;
 }	t_coder;
 
 typedef struct s_dongle
@@ -57,28 +62,31 @@ typedef struct s_dongle
 
 typedef struct s_data
 {
-	int				n_coders;
-	int				t_burnout;
-	int				t_compile;
-	int				t_debug;
-	int				t_refactor;
-	int				n_compiles;
-	int				cooldown;
-	int				scheduler;
+	int					n_coders;
+	int					t_burnout;
+	int					t_compile;
+	int					t_debug;
+	int					t_refactor;
+	int					n_compiles;
+	int					cooldown;
+	int					scheduler;
 
-	long			start_time;
-	t_dongle		*dongles;
-	t_coder			*coders;
-	int				sim_over;
-	pthread_t		monitor_th;
-	pthread_mutex_t	sim_mut;
-	pthread_mutex_t	logger_mut;
+	long				start_time;
+	t_dongle			*dongles;
+	t_coder				*coders;
+	pthread_cond_t		sleep_cond;
+	enum e_sim_state	sim_state;
+	pthread_t			monitor_th;
+	pthread_mutex_t		sim_mut;
+	pthread_cond_t		sim_cond;
+	pthread_mutex_t		logger_mut;
 }	t_data;
 
 int				ft_atoi(const char *nptr);
 long			get_time_in_ms(void);
 struct timespec	ms_to_ts(long ms);
-void			coder_sleep(long ms);
+int				all_threads_started(t_data *data);
+void			coder_sleep(t_data *data, long ms);
 void			log_state(t_data *data, int coder_id, char *msg);
 
 void			insert(t_dongle *dg, t_coder *coder);
@@ -89,7 +97,6 @@ int				init_sim(t_data *data);
 
 int				has_priority(t_coder *c1, t_coder *c2);
 int				is_top(t_coder *coder, t_dongle *dongle);
-// int				acquire_dongle(t_coder *coder, t_dongle *dongle);
 int				acquire_dongles(t_coder *coder);
 void			release_dongle(t_dongle *dongle, long cooldown);
 void			broadcast_dongles(t_data *data);

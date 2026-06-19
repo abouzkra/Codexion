@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 17:57:18 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/05/21 23:57:53 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/19 17:32:52 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,11 +97,13 @@ static int	init_coders(t_data *data)
 
 int	init_sim(t_data *data)
 {
-	data->sim_over = 0;
+	data->sim_state = -1;
 	data->start_time = get_time_in_ms();
 	return (
 		init_mutexes(data)
 		&& init_dongles(data)
 		&& init_coders(data)
+		&& pthread_cond_init(&data->sim_cond, NULL) == 0
+		&& pthread_cond_init(&data->sleep_cond, NULL) == 0
 	);
 }
