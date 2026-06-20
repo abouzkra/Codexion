@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 15:47:18 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/05/09 18:55:28 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/20 11:12:47 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,9 @@ t_data	*parse_args(int ac, char *av[])
 	if (!data)
 		return (NULL);
 	memset(data, 0, sizeof(t_data));
+	data->t = (t_tracker){.spawned_coders = 0, .sim_mut_init = 0,
+		.sim_cond_init = 0, .logger_mut_init = 0, .dongle_cond_init = 0,
+		.dongle_mut_init = 0, .sleep_cond_init = 0};
 	convert_args(av, data);
 	if (!validate_args(data))
 	{

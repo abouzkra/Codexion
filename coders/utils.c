@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 18:13:31 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/19 18:07:16 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/20 13:48:56 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,14 +46,6 @@ int	all_threads_started(t_data *data)
 	}
 	pthread_mutex_unlock(&data->sim_mut);
 	return (1);
-}
-
-struct timespec	ms_to_ts(long ms)
-{
-	return ((struct timespec){
-		.tv_sec = ms / 1000,
-		.tv_nsec = (ms % 1000) * 1000000
-	});
 }
 
 int	ft_atoi(const char *nptr)

@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/20 16:32:18 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/19 17:33:07 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/20 11:26:02 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static void	set_sim_state(t_data *data, enum e_sim_state state)
 	pthread_mutex_unlock(&data->sim_mut);
 }
 
-void	start_sim(t_data *data)
+int	start_sim(t_data *data)
 {
 	int	i;
 
@@ -57,7 +57,7 @@ void	start_sim(t_data *data)
 			data->n_coders = i;
 			pthread_cond_broadcast(&data->sim_cond);
 			pthread_mutex_unlock(&data->sim_mut);
-			return ;
+			return (0);
 		}
 		i++;
 	}
@@ -65,19 +65,19 @@ void	start_sim(t_data *data)
 			NULL, monitor_routine, (void *)data) != 0)
 	{
 		set_sim_state(data, OVER);
-		return ;
+		return (0);
 	}
 	set_sim_state(data, STARTED);
+	return (1);
 }
 
 void	end_sim(t_data *data)
 {
 	int	i;
 
-	if (data->monitor_th)
-		pthread_join(data->monitor_th, NULL);
+	pthread_join(data->monitor_th, NULL);
 	i = 0;
-	while (i < data->n_coders)
+	while (i < data->t.spawned_coders)
 	{
 		pthread_join(data->coders[i].th_id, NULL);
 		i++;

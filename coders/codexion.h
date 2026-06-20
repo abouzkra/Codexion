@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 15:27:58 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/19 16:33:38 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/20 13:49:00 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,17 @@ typedef struct s_dongle
 	int				queue_size;
 }	t_dongle;
 
+typedef struct s_tracker
+{
+	int	spawned_coders;
+	int	sim_mut_init;
+	int	sim_cond_init;
+	int	dongle_mut_init;
+	int	dongle_cond_init;
+	int	logger_mut_init;
+	int	sleep_cond_init;
+}	t_tracker;
+
 typedef struct s_data
 {
 	int					n_coders;
@@ -80,11 +91,11 @@ typedef struct s_data
 	pthread_mutex_t		sim_mut;
 	pthread_cond_t		sim_cond;
 	pthread_mutex_t		logger_mut;
+	t_tracker			t;
 }	t_data;
 
 int				ft_atoi(const char *nptr);
 long			get_time_in_ms(void);
-struct timespec	ms_to_ts(long ms);
 int				all_threads_started(t_data *data);
 void			coder_sleep(t_data *data, long ms);
 void			log_state(t_data *data, int coder_id, char *msg);
@@ -105,7 +116,7 @@ void			*monitor_routine(void *arg);
 void			*coder_routine(void	*arg);
 
 int				sim_is_over(t_data *data);
-void			start_sim(t_data *data);
+int				start_sim(t_data *data);
 void			end_sim(t_data *data);
 
 #endif
