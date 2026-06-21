@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 18:13:31 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/20 13:48:56 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/21 11:26:33 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,31 +46,4 @@ int	all_threads_started(t_data *data)
 	}
 	pthread_mutex_unlock(&data->sim_mut);
 	return (1);
-}
-
-int	ft_atoi(const char *nptr)
-{
-	long long unsigned	res;
-	int					digit;
-
-	if (!nptr || !*nptr)
-		return (-1);
-	while (*nptr == ' ' || (*nptr <= 13 && *nptr >= 9))
-		nptr++;
-	if (*nptr == '+')
-		nptr++;
-	if (*nptr == '-')
-		return (-1);
-	res = 0;
-	while (*nptr)
-	{
-		if (*nptr < '0' || *nptr > '9')
-			return (-1);
-		digit = *nptr - '0';
-		res = res * 10 + digit;
-		if (res > INT_MAX)
-			return (-1);
-		nptr++;
-	}
-	return ((int)(res));
 }

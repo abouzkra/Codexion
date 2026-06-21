@@ -63,7 +63,9 @@ All arguments are mandatory and validated; invalid input (negative numbers, non-
 
 - [The Linux Programming Interface](https://broman.dev/download/The%20Linux%20Programming%20Interface.pdf)
 - [Understanding Concurrency and Multi-Threading](https://medium.com/@drajput_14416/understanding-concurrency-and-multi-threading-8dc7873e5818)
--
+- [POSIX Threads Programming](https://hpc-tutorials.llnl.gov/posix/)
+- [Coffman conditions](https://faq.computersciencewiki.org/index.php/home/article/coffman-conditions)
+- man pages: [pthread_create](https://linux.die.net/man/3/pthread_create), [pthread_join](https://linux.die.net/man/3/pthread_join), [pthread_mutex_init](https://linux.die.net/man/3/pthread_mutex_init), [pthread_mutex_destroy](https://linux.die.net/man/3/pthread_mutex_destroy), [pthread_cond_init](https://linux.die.net/man/3/pthread_cond_init), [pthread_cond_destroy](https://linux.die.net/man/3/pthread_cond_destory)
 
 ## AI Usage
 

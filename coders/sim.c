@@ -67,6 +67,7 @@ int	start_sim(t_data *data)
 		set_sim_state(data, OVER);
 		return (0);
 	}
+	data->t.monitor_thread = 1;
 	set_sim_state(data, STARTED);
 	return (1);
 }
@@ -75,9 +76,10 @@ void	end_sim(t_data *data)
 {
 	int	i;
 
-	pthread_join(data->monitor_th, NULL);
+	if (data->t.monitor_thread)
+		pthread_join(data->monitor_th, NULL);
 	i = 0;
-	while (i < data->t.spawned_coders)
+	while (i < data->n_coders)
 	{
 		pthread_join(data->coders[i].th_id, NULL);
 		i++;

@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 15:47:18 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/20 11:12:47 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/21 12:45:58 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,17 +30,15 @@ static void	convert_args(char *av[], t_data *data)
 
 static int	validate_args(t_data *data)
 {
-	if (data->n_coders == -1
-		|| data->t_burnout == -1
-		|| data->t_compile == -1
-		|| data->t_debug == -1
-		|| data->t_refactor == -1
-		|| data->n_compiles == -1
-		|| data->cooldown == -1
-		|| data->scheduler == -1
-	)
-		return (0);
-	return (1);
+	return (data->n_coders >= 0
+		&& data->t_burnout >= 0
+		&& data->t_compile >= 0
+		&& data->t_debug >= 0
+		&& data->t_refactor >= 0
+		&& data->n_compiles >= 1
+		&& data->cooldown >= 0
+		&& (data->scheduler == FIFO || data->scheduler == EDF)
+	);
 }
 
 t_data	*parse_args(int ac, char *av[])
@@ -53,9 +51,6 @@ t_data	*parse_args(int ac, char *av[])
 	if (!data)
 		return (NULL);
 	memset(data, 0, sizeof(t_data));
-	data->t = (t_tracker){.spawned_coders = 0, .sim_mut_init = 0,
-		.sim_cond_init = 0, .logger_mut_init = 0, .dongle_cond_init = 0,
-		.dongle_mut_init = 0, .sleep_cond_init = 0};
 	convert_args(av, data);
 	if (!validate_args(data))
 	{
