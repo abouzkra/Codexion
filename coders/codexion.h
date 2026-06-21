@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 15:27:58 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/20 13:49:00 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/21 11:59:49 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@
 # include <string.h>
 # include <sys/time.h>
 # include <unistd.h>
-
-# define INT_MAX 2147483647
 
 enum	e_scheduler
 {
@@ -94,29 +92,29 @@ typedef struct s_data
 	t_tracker			t;
 }	t_data;
 
-int				ft_atoi(const char *nptr);
-long			get_time_in_ms(void);
-int				all_threads_started(t_data *data);
-void			coder_sleep(t_data *data, long ms);
-void			log_state(t_data *data, int coder_id, char *msg);
+int		ft_atoi(const char *nptr);
+long	get_time_in_ms(void);
+int		all_threads_started(t_data *data);
+void	coder_sleep(t_data *data, long ms);
+void	log_state(t_data *data, int coder_id, char *msg);
 
-void			insert(t_dongle *dg, t_coder *coder);
-int				pop(t_dongle *dg);
+void	insert(t_dongle *dg, t_coder *coder);
+int		pop(t_dongle *dg);
 
-t_data			*parse_args(int ac, char *av[]);
-int				init_sim(t_data *data);
+t_data	*parse_args(int ac, char *av[]);
+int		init_sim(t_data *data);
 
-int				has_priority(t_coder *c1, t_coder *c2);
-int				is_top(t_coder *coder, t_dongle *dongle);
-int				acquire_dongles(t_coder *coder);
-void			release_dongle(t_dongle *dongle, long cooldown);
-void			broadcast_dongles(t_data *data);
+int		has_priority(t_coder *c1, t_coder *c2);
+int		is_top(t_coder *coder, t_dongle *dongle);
+int		acquire_dongles(t_coder *coder);
+void	release_dongle(t_dongle *dongle, long cooldown);
+void	broadcast_dongles(t_data *data);
 
-void			*monitor_routine(void *arg);
-void			*coder_routine(void	*arg);
+void	*monitor_routine(void *arg);
+void	*coder_routine(void	*arg);
 
-int				sim_is_over(t_data *data);
-int				start_sim(t_data *data);
-void			end_sim(t_data *data);
+int		sim_is_over(t_data *data);
+int		start_sim(t_data *data);
+void	end_sim(t_data *data);
 
 #endif

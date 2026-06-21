@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/21 18:21:07 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/19 18:15:17 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/21 11:42:31 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	is_top(t_coder *coder, t_dongle *dongle)
 	return (dongle->queue_size > 0 && coder == dongle->queue[0]);
 }
 
-int	compile(t_coder *coder)
+static int	compile(t_coder *coder)
 {
 	if (!acquire_dongles(coder))
 		return (0);

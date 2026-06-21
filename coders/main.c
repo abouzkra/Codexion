@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 15:21:37 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/20 11:39:57 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/21 11:25:19 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,25 +58,17 @@ static void	cleanup(t_data *data)
 int	main(int ac, char *av[])
 {
 	t_data	*data;
+	int		exit_status;
 
+	exit_status = 0;
 	data = parse_args(ac, av);
 	if (!data)
-	{
-		cleanup(data);
 		return (1);
-	}
 	if (!init_sim(data))
-	{
-		cleanup(data);
-		return (1);
-	}
+		exit_status = 1;
 	if (!start_sim(data))
-	{
-		end_sim(data);
-		cleanup(data);
-		return (1);
-	}
+		exit_status = 1;
 	end_sim(data);
 	cleanup(data);
-	return (0);
+	return (exit_status);
 }

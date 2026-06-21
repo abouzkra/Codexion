@@ -6,12 +6,11 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/21 19:19:30 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/19 18:15:52 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/21 11:43:31 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <pthread.h>
 
 static int	is_available(t_dongle *dongle)
 {
