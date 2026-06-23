@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 15:21:37 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/21 11:25:19 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/22 15:44:59 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@ static void	destroy_dongles(t_data *data)
 	i = 0;
 	while (i < data->t.dongle_mut_init)
 	{
-		destroy_mutex(&data->dongles->mut, 1);
-		destroy_cond(&data->dongles->cond, i < data->t.dongle_cond_init);
+		destroy_mutex(&data->dongles[i].mut, 1);
+		destroy_cond(&data->dongles[i].cond, i < data->t.dongle_cond_init);
 		i++;
 	}
 }
@@ -43,15 +43,15 @@ static void	cleanup(t_data *data)
 {
 	if (!data)
 		return ;
-	if (data->dongles)
-		free(data->dongles);
 	destroy_dongles(data);
-	if (data->coders)
-		free(data->coders);
 	destroy_mutex(&data->sim_mut, data->t.sim_mut_init);
 	destroy_cond(&data->sim_cond, data->t.sim_cond_init);
 	destroy_mutex(&data->logger_mut, data->t.logger_mut_init);
 	destroy_cond(&data->sleep_cond, data->t.sleep_cond_init);
+	if (data->dongles)
+		free(data->dongles);
+	if (data->coders)
+		free(data->coders);
 	free(data);
 }
 
@@ -67,8 +67,9 @@ int	main(int ac, char *av[])
 	if (!init_sim(data))
 		exit_status = 1;
 	if (!start_sim(data))
-		exit_status = 1;
-	end_sim(data);
+		exit_status = 2;
+	if (exit_status != 1)
+		end_sim(data);
 	cleanup(data);
 	return (exit_status);
 }

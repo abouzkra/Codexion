@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 15:47:18 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/21 11:30:15 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/22 15:45:35 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static int	validate_args(t_data *data)
 		&& data->t_compile >= 0
 		&& data->t_debug >= 0
 		&& data->t_refactor >= 0
-		&& data->n_compiles >= 0
+		&& data->n_compiles >= 1
 		&& data->cooldown >= 0
 		&& (data->scheduler == FIFO || data->scheduler == EDF)
 	);

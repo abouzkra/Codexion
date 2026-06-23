@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 15:27:58 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/21 11:59:49 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/22 15:45:09 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ typedef struct s_dongle
 typedef struct s_tracker
 {
 	int	spawned_coders;
+	int	monitor_th_spawned;
 	int	sim_mut_init;
 	int	sim_cond_init;
 	int	dongle_mut_init;

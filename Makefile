@@ -1,8 +1,7 @@
 NAME = codexion
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -pthread
-SRCS = coders/ft_atoi.c	\
-	   coders/queue.c	\
+SRCS = coders/queue.c	\
 	   coders/parser.c	\
 	   coders/monitor.c	\
 	   coders/dongle.c	\
@@ -29,5 +28,8 @@ fclean: clean
 	$(RM) $(NAME)
 
 re: fclean all
+
+val:
+	valgrind --tool=helgrind --max-threads=3000 ./codexion 199 2000 10 10 10 2 10 fifo 2> out
 
 .PHONY: all clean fclean re

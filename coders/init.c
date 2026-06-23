@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 17:57:18 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/20 11:11:22 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/22 15:46:51 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ static int	init_dongles(t_data *data)
 			return (0);
 		data->t.dongle_cond_init++;
 		dongle->held_by = -1;
-		memset(dongle->queue, 0, sizeof(dongle->queue));
 		i++;
 	}
 	return (1);
@@ -74,6 +73,7 @@ static int	init_coders(t_data *data)
 		data->coders[i].data = (void *)data;
 		i++;
 	}
+	data->t.spawned_coders = data->n_coders;
 	return (1);
 }
 
