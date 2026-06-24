@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/21 22:14:28 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/23 11:44:24 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/24 13:42:50 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,10 +82,8 @@ void	*monitor_routine(void *arg)
 			pthread_mutex_lock(&data->sim_mut);
 			data->sim_state = OVER;
 			pthread_cond_broadcast(&data->sim_cond);
-			pthread_cond_broadcast(&data->sleep_cond);
 			pthread_mutex_unlock(&data->sim_mut);
 			log_burned_out(data, burned_out);
-			broadcast_dongles(data);
 			break ;
 		}
 		usleep(500);

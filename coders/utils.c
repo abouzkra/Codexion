@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 18:13:31 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/22 16:50:49 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/24 14:05:45 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,16 +22,15 @@ long	get_time_in_ms(void)
 
 void	coder_sleep(t_data *data, long ms)
 {
-	struct timespec	ts;
-	long			target_ms;
+	long	start_time;
 
-	target_ms = get_time_in_ms() + ms;
-	ts.tv_sec = target_ms / 1000;
-	ts.tv_nsec = (target_ms % 1000) * 1000000;
-	pthread_mutex_lock(&data->sim_mut);
-	while (data->sim_state != OVER && get_time_in_ms() < target_ms)
-		pthread_cond_timedwait(&data->sleep_cond, &data->sim_mut, &ts);
-	pthread_mutex_unlock(&data->sim_mut);
+	start_time = get_time_in_ms();
+	while ((get_time_in_ms() - start_time) < ms)
+	{
+		if (!sim_is_over(data))
+			break ;
+		usleep(500);
+	}
 }
 
 int	all_threads_started(t_data *data)

@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/21 19:19:30 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/23 11:48:29 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/24 11:45:44 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,18 +72,4 @@ void	release_dongle(t_dongle *dongle, long cooldown)
 	dongle->cooldown_ts = get_time_in_ms() + cooldown;
 	pthread_cond_broadcast(&dongle->cond);
 	pthread_mutex_unlock(&dongle->mut);
-}
-
-void	broadcast_dongles(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->n_coders)
-	{
-		pthread_mutex_lock(&(data->dongles[i].mut));
-		pthread_cond_broadcast(&(data->dongles[i].cond));
-		pthread_mutex_unlock(&(data->dongles[i].mut));
-		i++;
-	}
 }

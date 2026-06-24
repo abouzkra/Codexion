@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 15:27:58 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/22 15:45:09 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/24 13:53:15 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ typedef struct s_data
 	int					t_refactor;
 	int					n_compiles;
 	int					cooldown;
-	int					scheduler;
+	enum e_scheduler	scheduler;
 
 	long				start_time;
 	t_dongle			*dongles;
@@ -109,7 +109,6 @@ int		has_priority(t_coder *c1, t_coder *c2);
 int		is_top(t_coder *coder, t_dongle *dongle);
 int		acquire_dongles(t_coder *coder);
 void	release_dongle(t_dongle *dongle, long cooldown);
-void	broadcast_dongles(t_data *data);
 
 void	*monitor_routine(void *arg);
 void	*coder_routine(void	*arg);

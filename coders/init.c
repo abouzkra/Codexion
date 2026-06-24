@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 17:57:18 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/22 15:46:51 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/24 11:45:50 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ static int	init_coders(t_data *data)
 			data->coders[i].second_dongle = data->dongles + i;
 		}
 		data->coders[i].last_compile = data->start_time;
-		data->coders[i].data = (void *)data;
+		data->coders[i].data = data;
 		i++;
 	}
 	data->t.spawned_coders = data->n_coders;

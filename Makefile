@@ -29,7 +29,4 @@ fclean: clean
 
 re: fclean all
 
-val:
-	valgrind --tool=helgrind --max-threads=3000 ./codexion 199 2000 10 10 10 2 10 fifo 2> out
-
 .PHONY: all clean fclean re
