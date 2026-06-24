@@ -113,24 +113,23 @@ This grants a fully deterministic order with no infinite tie.
 
 ## Burnout detection
 
-A dedicated `monitor_routine` thread (`monitor.c`) polls every coder's `last_compile` timestamp every 500µs (`usleep(500)`) and compares `get_time_in_ms() - last_compile` against `t_burnout`. As soon as a coder exceeds the threshold, the monitor immediately sets `sim_state = OVER`, broadcasts the state-change condition variables (`sim_cond`, and every dongle's `cond` via `broadcast_dongles`) to wake any coder sleeping or polling for a dongle, then logs the burnout. The 500µs polling interval keeps the detection comfortably within the 10ms precision window required by the subject. The monitor checks burnout **before** checking for overall completion each loop, so a last-moment burnout is never masked by a simultaneous "all compiles done" state.
+A dedicated `monitor_routine` thread (`monitor.c`) polls every coder's `last_compile` timestamp every 500µs (`usleep(500)`) and compares `get_time_in_ms() - last_compile` against `t_burnout`. As soon as a coder exceeds the threshold, the monitor immediately sets `sim_state = OVER`, broadcasts the state-change condition variable through `sim_cond` to wake any coder sleeping or polling for a dongle, then logs the burnout. The 500µs polling interval keeps the detection comfortably within the 10ms precision window required by the subject. The monitor checks burnout **before** checking for overall completion each loop, so a last-moment burnout is never masked by a simultaneous "all compiles done" state.
 
 ## Log serialization
 
 All logging goes through `log_state` (`sim.c`) and `log_burned_out` (`monitor.c`), both of which lock a single shared `logger_mut` mutex around the `printf` call. Since every thread (coders and monitor) must acquire this same mutex before writing a line, two log lines can never interleave because each `printf` call completes atomically with respect to the others. `log_state` also re-checks `sim_is_over` after acquiring the lock to avoid printing stale state-change messages after the simulation has already ended.
 
-# Thread Synchronization mechanism
+# Thread Synchronization mechanisms
 
 | Primitive | Protects | Used in |
 | --- | --- | --- |
 | `sim_mut` + `sim_cond` | Global simulation state (`sim_state`), per-coder `compile_count` / `last_compile` | `sim.c`, `utils.c`, `monitor.c`, `coder.c` |
 | `logger_mut` | Standard output, so no two log lines interleave | `sim.c`, `monitor.c` |
-| `dongle->mut` + `dongle->cond` | Each dongle's `held_by`, `cooldown_ts`, and its 2-slot priority queue | `dongle.c`, `queue.c` |
-| `sleep_cond` | sleeping coders is much more efficient as they wait on the condition variable | `utils.c` |
+| `dongle->mut` | Each dongle's `held_by`, `cooldown_ts`, and its 2-slot priority queue | `dongle.c`, `queue.c` |
 
 ## Coordination Examples:
 
 - **Race-free dongle state:**  data of a given dongle is only ever read or written while locking that dongle's `mut`, this prevents coders from thinking they both acquired the same dongle.
 - **Atomic two-dongle acquisition:** `try_acquire_dongle` locks the first dongle's mutex checks priority and availability then locks the second dongle's mutex while still holding this first lock, this makes acquiring both dongles atomic.
 - **Coder-Monitor communication:** the monitor knows what each coder is doing by only reading `last_compile` and `compile_count` under `sim_mut`, which coders also lock whenever they update those same fields.
-- **Responsive shutdown:** instead of busy-polling for simulation end, sleeping coders wait on `sleep_cond` via `pthread_cond_timedwait` inside `coder_sleep`, and dongle-polling coders periodically check `sim_is_over`. When the monitor detects termination, it broadcasts `sim_cond` and every dongle's `cond` (`broadcast_dongles`) so that no thread is left blocked after the simulation ends.
+- **Responsive shutdown:** instead of busy-polling for simulation end, sleeping coders sleep for the a given time while polling for the end of simulation every 500μs inside `coder_sleep`, and dongle-polling coders periodically check `sim_is_over`. When the monitor detects termination, it broadcasts `sim_cond` so that no thread is left blocked after the simulation ends.
