@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 17:57:18 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/24 11:45:50 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/24 15:10:13 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,6 @@ static int	init_dongles(t_data *data)
 		if (pthread_mutex_init(&dongle->mut, NULL) != 0)
 			return (0);
 		data->t.dongle_mut_init++;
-		if (pthread_cond_init(&dongle->cond, NULL) != 0)
-			return (0);
-		data->t.dongle_cond_init++;
 		dongle->held_by = -1;
 		i++;
 	}
@@ -86,8 +83,5 @@ int	init_sim(t_data *data)
 	if (pthread_cond_init(&data->sim_cond, NULL) != 0)
 		return (0);
 	data->t.sim_cond_init = 1;
-	if (pthread_cond_init(&data->sleep_cond, NULL) != 0)
-		return (0);
-	data->t.sleep_cond_init = 1;
 	return (1);
 }

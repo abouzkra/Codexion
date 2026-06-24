@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 18:13:31 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/24 14:05:45 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/24 15:04:16 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	coder_sleep(t_data *data, long ms)
 	start_time = get_time_in_ms();
 	while ((get_time_in_ms() - start_time) < ms)
 	{
-		if (!sim_is_over(data))
+		if (sim_is_over(data))
 			break ;
 		usleep(500);
 	}

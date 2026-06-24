@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 15:27:58 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/24 13:53:15 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/24 15:45:15 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,14 +44,11 @@ typedef struct s_coder
 	t_dongle	*first_dongle;
 	t_dongle	*second_dongle;
 	t_data		*data;
-
-	long		arrival_time;
 }	t_coder;
 
 typedef struct s_dongle
 {
 	pthread_mutex_t	mut;
-	pthread_cond_t	cond;
 	int				held_by;
 	long			cooldown_ts;
 	t_coder			*queue[2];
@@ -65,9 +62,7 @@ typedef struct s_tracker
 	int	sim_mut_init;
 	int	sim_cond_init;
 	int	dongle_mut_init;
-	int	dongle_cond_init;
 	int	logger_mut_init;
-	int	sleep_cond_init;
 }	t_tracker;
 
 typedef struct s_data
@@ -84,9 +79,8 @@ typedef struct s_data
 	long				start_time;
 	t_dongle			*dongles;
 	t_coder				*coders;
-	pthread_cond_t		sleep_cond;
-	enum e_sim_state	sim_state;
 	pthread_t			monitor_th;
+	enum e_sim_state	sim_state;
 	pthread_mutex_t		sim_mut;
 	pthread_cond_t		sim_cond;
 	pthread_mutex_t		logger_mut;

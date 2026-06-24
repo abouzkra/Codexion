@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 15:21:37 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/24 14:03:33 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/24 15:20:16 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ static void	destroy_dongles(t_data *data)
 	while (i < data->t.dongle_mut_init)
 	{
 		destroy_mutex(&data->dongles[i].mut, 1);
-		destroy_cond(&data->dongles[i].cond, i < data->t.dongle_cond_init);
 		i++;
 	}
 }
@@ -47,7 +46,6 @@ static void	cleanup(t_data *data)
 	destroy_mutex(&data->sim_mut, data->t.sim_mut_init);
 	destroy_cond(&data->sim_cond, data->t.sim_cond_init);
 	destroy_mutex(&data->logger_mut, data->t.logger_mut_init);
-	destroy_cond(&data->sleep_cond, data->t.sleep_cond_init);
 	if (data->dongles)
 		free(data->dongles);
 	if (data->coders)
