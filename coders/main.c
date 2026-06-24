@@ -6,7 +6,7 @@
 /*   By: abouzkra <abouzkra@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 15:21:37 by abouzkra          #+#    #+#             */
-/*   Updated: 2026/06/24 15:20:16 by abouzkra         ###   ########.fr       */
+/*   Updated: 2026/06/24 20:27:27 by abouzkra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,9 +64,9 @@ int	main(int ac, char *av[])
 		return (1);
 	if (!init_sim(data))
 		exit_status = 1;
-	if (!start_sim(data))
+	else if (!start_sim(data))
 		exit_status = 2;
-	else if (exit_status != 1)
+	if (exit_status != 1)
 		end_sim(data);
 	cleanup(data);
 	return (exit_status);
